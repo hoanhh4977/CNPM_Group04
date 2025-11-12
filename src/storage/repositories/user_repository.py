@@ -7,7 +7,7 @@ class UserRepository:
 
     # Lấy tất cả người dùng
     def get_all_user(self):
-        data = self.table.select("*").execute().data
+        data = self.table.select("*").execute().data    
         return data if data else []
 
     # Lấy người dùng theo ID

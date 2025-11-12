@@ -1,0 +1,7 @@
+from src.storage.repositories.admin_repository import AdminRepository
+from src.storage.repositories.attendance_repository import AttendanceRepository
+from src.storage.repositories.lecturer_repository import LecturerRepository
+from src.storage.repositories.notification_repository import NotificationRepository
+from src.storage.repositories.session_repository import SessionRepository
+from src.storage.repositories.student_repository import StudentRepository
+from src.storage.repositories.user_repository import UserRepository
