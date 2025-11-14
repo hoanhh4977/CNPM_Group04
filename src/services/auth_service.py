@@ -19,15 +19,18 @@ class AuthService:
     def login(self, credentials: Dict):
         """
         credentials = {
-            "id": "",
+            "username": "",
             "password": ""
         }
         """
 
-        user = self.user_repo.get_user_by_id(credentials["id"])
-        if not user:
+        user = self.user_repo.get_user_by_id(credentials["username"])
+        user_by_phone = self.user_repo.get_user_by_phone(credentials["username"])
+        if not user and not user_by_phone:
             return {"success": False, "error": "User not found"}
-
+        if not user:
+            user = user_by_phone
+            
         # Verify password
         if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user.password_hash.encode('utf-8')):
             return {"success": False, "error": "Invalid password"}
@@ -36,24 +39,27 @@ class AuthService:
         role = user.account_type
         extra_data = {}
 
-        if role == "student":
-            student = self.student_repo.get_by_user_id(user.user_id)
-            if student:
-                extra_data = {
-                    "student_id": student.student_id,
-                    "class_name": student.class_name
-                }
-        elif role == "lecturer":
-            lecturer = self.lecturer_repo.get_by_user_id(user.user_id)
-            if lecturer:
-                extra_data = {"lecturer_id": lecturer.lecturer_id}
-        elif role == "admin":
-            admin = self.admin_repo.get_by_user_id(user.user_id)
-            if admin:
-                extra_data = {
-                    "admin_id": admin.admin_id,
-                    "admin_level": admin.admin_level
-                }
+        # Fetch role-specific details
+        student = self.student_repo.get_by_user_id(user.user_id)
+        if student:
+            extra_data = {
+                "role": "student",
+                "student_id": student.student_id,
+                "class_name": student.class_name
+            }
+        lecturer = self.lecturer_repo.get_by_user_id(user.user_id)
+        if lecturer:
+            extra_data = {
+                "role": "lecturer",
+                "lecturer_id": lecturer.lecturer_id
+            }
+        admin = self.admin_repo.get_by_user_id(user.user_id)
+        if admin:
+            extra_data = {
+                "role": "admin",
+                "admin_id": admin.admin_id,
+                "admin_level": admin.admin_level
+            }
 
         return {
             "success": True,
@@ -88,7 +94,7 @@ class AuthService:
         hashed_pw = bcrypt.hashpw(user_data["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         # Create user
-        self.user_repo.create({
+        self.user_repo.create_user({
             "user_id": user_data["user_id"],
             "full_name": user_data["full_name"],
             "account_type": user_data["account_type"],
@@ -98,7 +104,7 @@ class AuthService:
         })
 
         # Create role-specific record
-        role = user_data["account_type"]
+        role = user_data["role"]
         extra = user_data.get("extra", {})
 
         if role == "student":
@@ -111,12 +117,6 @@ class AuthService:
             self.lecturer_repo.create({
                 "lecturer_id": extra.get("lecturer_id"),
                 "user_id": user_data["user_id"]
-            })
-        elif role == "admin":
-            self.admin_repo.create({
-                "admin_id": extra.get("admin_id"),
-                "user_id": user_data["user_id"],
-                "admin_level": extra.get("admin_level", 1)
             })
 
         return {"success": True, "message": f"{role.capitalize()} registered successfully"}

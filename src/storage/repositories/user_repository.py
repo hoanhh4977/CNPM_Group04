@@ -14,6 +14,10 @@ class UserRepository:
     def get_user_by_id(self, user_id: str):
         data = self.table.select("*").eq("user_id", user_id).execute().data
         return data[0] if data else None
+    
+    def get_user_by_phone(self, phone_number: str):
+        data = self.table.select("*").eq("phone_number", phone_number).execute().data
+        return data[0] if data else None
 
     # Tạo mới người dùng
     def create_user(self, user_data: dict):
