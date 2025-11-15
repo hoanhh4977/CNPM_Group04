@@ -27,7 +27,7 @@ class AuthService:
         }
         """
 
-        user = self.user_repo.get_user_by_id(credentials["username"])
+        user = self.user_repo.get_user_by_username(credentials["username"])
         user_by_phone = self.user_repo.get_user_by_phone(credentials["username"])
         if not user and not user_by_phone:
             return {"success": False, "error": "User not found"}
@@ -35,7 +35,7 @@ class AuthService:
             user = user_by_phone
 
         # Verify password
-        if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user.password_hash.encode('utf-8')):
+        if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user["password_hash"].encode('utf-8')):
             return {"success": False, "error": "Invalid password"}
 
         # Determine role and attach role-specific info
@@ -92,9 +92,10 @@ class AuthService:
         # Hash password
         hashed_pw = bcrypt.hashpw(user_data["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
+        user_id = str(uuid.uuid4())
         # Create user
         self.user_repo.create_user({
-            "user_id": str(uuid.uuid4()),
+            "user_id": user_id,
             "username": user_data["username"],
             "full_name": user_data["full_name"],
             "account_type": user_data["account_type"],
@@ -104,22 +105,22 @@ class AuthService:
         })
 
         # Create role-specific record
-        role = user_data["role"]
+        role = user_data["account_type"]
         extra = user_data.get("extra", {})
 
         if role == "student":
             self.student_repo.create({
                 "student_id": extra.get("student_id"),
-                "user_id": user_data["user_id"],
+                "user_id": user_id,
                 "class_name": extra.get("class_name")
             })
         elif role == "lecturer":
             self.lecturer_repo.create({
                 "lecturer_id": extra.get("lecturer_id"),
-                "user_id": user_data["user_id"]
+                "user_id": user_id
             })
 
-        return {"success": True, "message": f"{role.capitalize()} registered successfully"}
+        return {"success": True, "message": f"{role.capitalize()} đăng ký thành công!"}
 
     def console_login(self):
         print("\n" + "="*40)
