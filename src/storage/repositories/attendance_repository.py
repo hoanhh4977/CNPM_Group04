@@ -4,6 +4,10 @@ class AttendanceRepository:
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("attendance")
+
+    def get_by_student(self, student_id):
+        return self.table.select("*").eq("student_id", student_id).execute().data or []
+
     def get_attendance(self, student_id, session_id):
         return self.table.select("*")\
             .eq("student_id", student_id)\
