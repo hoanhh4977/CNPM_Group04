@@ -20,12 +20,18 @@ def mark_attendance():
 def create_session():
     session_id = input("Mã buổi học: ")
     lecturer_id = input("Mã giảng viên: ")
-    code = input("Mã điểm danh: ")
-    result = session_service.create_session({
-        "session_id": session_id,
-        "lecturer_id": lecturer_id,
-        "attendance_code": code
-    })
+    attendance_code = input("Mã điểm danh: ")
+    subject_name = input("Tên môn học: ")
+    time_slot = input("Ca học (Sáng / Chiều): ")
+
+    result = session_service.create_session(
+        session_id,
+        lecturer_id,
+        attendance_code,
+        subject_name,
+        time_slot
+    )
+
     print(" Kết quả:", result)
 
 #  Xem điểm danh
@@ -78,3 +84,4 @@ def run_console():
             break
         else:
             print(" Lựa chọn không hợp lệ.")
+
