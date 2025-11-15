@@ -4,16 +4,9 @@ class StudentRepository:
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("student")
-
-    def insert_default_student(self):
-        existing = self.table.select("*").eq("student_id", "U002").execute().data
-        if not existing:
-            self.table.insert({
-                "student_id": "U002",
-                "user_id": "U002",
-                "class_name": "K23CNTT"
-            }).execute()
-
+    
+    def create(self, data):
+        return self.table.insert(data).execute().data
 
     # Lấy tất cả sinh viên
     def get_all_students(self):
