@@ -6,11 +6,13 @@ class StudentRepository:
         self.table = self.db.table("student")
 
     def insert_default_student(self):
-        self.table.insert({
-            "student_id": "U002",
-            "user_id": "U002",
-            "class_name": "K23CNTT"
-        }).execute()
+        existing = self.table.select("*").eq("student_id", "U002").execute().data
+        if not existing:
+            self.table.insert({
+                "student_id": "U002",
+                "user_id": "U002",
+                "class_name": "K23CNTT"
+            }).execute()
 
 
     # Lấy tất cả sinh viên
