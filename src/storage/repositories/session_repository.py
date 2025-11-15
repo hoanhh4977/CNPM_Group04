@@ -13,3 +13,4 @@ class SessionRepository:
 
     def get_by_lecturer(self, lecturer_id):
         return self.table.select("*").eq("lecturer_id", lecturer_id).execute().data or []
+
