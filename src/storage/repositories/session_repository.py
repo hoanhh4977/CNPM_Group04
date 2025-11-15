@@ -2,11 +2,18 @@ from src.storage.client import get_supabase
 
 class SessionRepository:
     def __init__(self):
+        self.db = get_supabase()
         self.session_table = get_supabase().table("session")
         self.attendance_table = get_supabase().table("attendance")
+        self.table = self.db.table("session")
+
+    def create(self, session_data: dict):
+        result = self.table.insert(session_data).execute()
+        return result.data
+
 
     def get_sessions_for_student(self, student_id):
-        # lấy danh sách session_id từ bảng attendance
+        # Bước 1: lấy danh sách session_id từ bảng attendance
         attendance_records = self.attendance_table \
             .select("session_id") \
             .eq("student_id", student_id) \
@@ -17,9 +24,8 @@ class SessionRepository:
         if not session_ids:
             return []
 
-        # truy vấn bảng session theo danh sách session_id
+        # Bước 2: truy vấn bảng session theo danh sách session_id
         return self.session_table \
             .select("*") \
             .in_("session_id", session_ids) \
             .execute().data or []
-
