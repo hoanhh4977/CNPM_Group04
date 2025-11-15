@@ -5,6 +5,9 @@ class LecturerRepository:
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
 
+    def create(self, data):
+        return self.table.insert(data).execute().data
+        
     # Lấy tất cả giảng viên
     def get_all_lecturers(self):
         data = self.table.select("*").execute().data
