@@ -2,15 +2,24 @@ from src.storage.client import get_supabase
 
 class SessionRepository:
     def __init__(self):
-        self.db = get_supabase()
-        self.table = self.db.table("session")
-    def create(self, session_data):
-        return self.table.insert(session_data).execute().data
+        self.session_table = get_supabase().table("session")
+        self.attendance_table = get_supabase().table("attendance")
 
-    def get_by_id(self, session_id):
-        return self.table.select("*").eq("session_id", session_id).execute().data or []
+    def get_sessions_for_student(self, student_id):
+        # lấy danh sách session_id từ bảng attendance
+        attendance_records = self.attendance_table \
+            .select("session_id") \
+            .eq("student_id", student_id) \
+            .execute().data or []
 
+        session_ids = [record["session_id"] for record in attendance_records]
 
-    def get_by_lecturer(self, lecturer_id):
-        return self.table.select("*").eq("lecturer_id", lecturer_id).execute().data or []
+        if not session_ids:
+            return []
+
+        # truy vấn bảng session theo danh sách session_id
+        return self.session_table \
+            .select("*") \
+            .in_("session_id", session_ids) \
+            .execute().data or []
 
