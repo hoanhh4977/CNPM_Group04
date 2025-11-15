@@ -6,3 +6,4 @@ class SessionService:
 
     def get_sessions_for_student(self, student_id):
         return self.session_repo.get_sessions_for_student(student_id)
+
