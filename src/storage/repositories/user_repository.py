@@ -15,6 +15,10 @@ class UserRepository:
         data = self.table.select("*").eq("user_id", user_id).execute().data
         return data[0] if data else None
     
+    def get_user_by_username(self, username: str):
+        data = self.table.select("*").eq("username", username).execute().data
+        return data[0] if data else None
+
     def get_user_by_phone(self, phone_number: str):
         data = self.table.select("*").eq("phone_number", phone_number).execute().data
         return data[0] if data else None
