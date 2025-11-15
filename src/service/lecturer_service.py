@@ -33,10 +33,4 @@ class LecturerService:
 
     def update_attendance_status(self, attendance_id, new_status):
         return self.attendance_repo.update_status(attendance_id, new_status)
-    def create_lecturer(self, user_id):
-        lecturer_id = uuid.uuid4().int % 1000000
-        data = {
-            "lecturer_id": lecturer_id,
-            "user_id": user_id
-        }
-        return self.lecturer_repo.create(data)
+    
