@@ -1,8 +1,8 @@
 import uuid
 from datetime import date
-from src.repository.lecturer_repository import LecturerRepository
-from src.repository.session_repository import SessionRepository
-from src.repository.attendance_repository import AttendanceRepository
+from src.storage.repositories.lecturer_repository import LecturerRepository
+from src.storage.repositories.session_repository import SessionRepository
+from src.storage.repositories.attendance_repository import AttendanceRepository
 from utils import generate_attendance_code
 from datetime import date
 

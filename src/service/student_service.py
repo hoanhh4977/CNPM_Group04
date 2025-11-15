@@ -1,8 +1,8 @@
 import uuid
 from datetime import date
-from src.repository.student_repository import StudentRepository
-from src.repository.attendance_repository import AttendanceRepository
-from src.repository.session_repository import SessionRepository
+from src.storage.repositories.student_repository import StudentRepository
+from src.storage.repositories.attendance_repository import AttendanceRepository
+from src.storage.repositories.session_repository import SessionRepository
 
 class StudentService:
     def __init__(self):

@@ -1,6 +1,6 @@
 import uuid
 from datetime import date
-from src.repository.session_repository import SessionRepository
+from src.storage.repositories.session_repository import SessionRepository
 
 class SessionService:
     def __init__(self):

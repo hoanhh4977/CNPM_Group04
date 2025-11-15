@@ -1,6 +1,6 @@
 import uuid
 from datetime import date
-from src.repository.attendance_repository import AttendanceRepository
+from src.storage.repositories.attendance_repository import AttendanceRepository
 
 class AttendanceService:
     def __init__(self):

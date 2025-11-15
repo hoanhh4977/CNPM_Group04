@@ -30,13 +30,13 @@ class AuthService:
         user = self.user_repo.get_user_by_username(credentials["username"])
         user_by_phone = self.user_repo.get_user_by_phone(credentials["username"])
         if not user and not user_by_phone:
-            return {"success": False, "error": "User not found"}
+            return {"success": False, "error": "Không tìm thấy người dùng"}
         if not user:
             user = user_by_phone
 
         # Verify password
         if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user["password_hash"].encode('utf-8')):
-            return {"success": False, "error": "Invalid password"}
+            return {"success": False, "error": "Mật khẩu không đúng"}
 
         # Determine role and attach role-specific info
         role = user["account_type"]
@@ -87,7 +87,7 @@ class AuthService:
         # Check if user already exists
         existing = self.user_repo.get_user_by_username(user_data["username"])
         if existing:
-            return {"success": False, "error": "User already exists"}
+            return {"success": False, "error": "Người dùng đã tồn tại. Vui lòng chọn tên đăng nhập khác."}
 
         # Hash password
         hashed_pw = bcrypt.hashpw(user_data["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
