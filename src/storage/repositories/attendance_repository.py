@@ -25,12 +25,6 @@ class AttendanceRepository:
             .eq("attendance_id", attendance_id)\
             .execute().data
 
-    def delete_attendance(self, student_id, session_id):
-        return self.table.delete()\
-            .eq("student_id", student_id)\
-            .eq("session_id", session_id)\
-            .execute().data
-
     def delete_attendance_by_id(self, attendance_id):
         return self.table.delete().eq("attendance_id", attendance_id).execute().data
     
