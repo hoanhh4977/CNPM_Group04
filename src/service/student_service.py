@@ -25,15 +25,6 @@ class StudentService:
     def delete_student(self, student_id):
         return self.student_repo.delete(student_id)
 
-    def create_student(self, user_id, class_name):
-        student_id = uuid.uuid4().int % 1000000
-        data = {
-            "student_id": student_id,
-            "user_id": user_id,
-            "class_name": class_name
-        }
-        return self.student_repo.create(data)
-
     def mark_attendance(self, student_id, session_id, attendance_code):
         session_list = self.session_repo.get_by_id(session_id)
 
