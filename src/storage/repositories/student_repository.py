@@ -5,6 +5,14 @@ class StudentRepository:
         self.db = get_supabase()
         self.table = self.db.table("student")
 
+    def insert_default_student(self):
+        self.table.insert({
+            "student_id": "U002",
+            "user_id": "U002",
+            "class_name": "K23CNTT"
+        }).execute()
+
+
     # Lấy tất cả sinh viên
     def get_all_students(self):
         data = self.table.select("*").execute().data
