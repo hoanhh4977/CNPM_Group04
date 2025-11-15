@@ -9,15 +9,13 @@ class LecturerRepository:
         return self.table.insert(data).execute().data
         
     # Lấy tất cả giảng viên
-    def get_all_lecturers(self):
-        data = self.table.select("*").execute().data
-        return data if data else []
-
+    def get_all(self):
+        return self.table.select("*").execute().data or []
     # Lấy giảng viên theo ID
-    def get_by_id(self, lecturer_id: str):
+    def get_by_id(self, lecturer_id):
         data = self.table.select("*").eq("lecturer_id", lecturer_id).execute().data
         return data[0] if data else None
-
+    
     # Lấy giảng viên theo user_id
     def get_by_user_id(self, user_id):
         return self.table.select("*").eq("user_id", user_id).execute().data or []
