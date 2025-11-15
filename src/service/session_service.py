@@ -1,6 +1,6 @@
 import uuid
 from datetime import date
-from src.storage.repositories.session_repository import SessionRepository
+from src.repository.session_repository import SessionRepository
 
 class SessionService:
     def __init__(self):
@@ -11,7 +11,7 @@ class SessionService:
 
     def get_sessions_for_lecturer(self, lecturer_id):
         return self.session_repo.get_by_lecturer(lecturer_id)
-    def create_session(self, lecturer_id, subject_name, time_slot):
+    def create_session(self, session_id, lecturer_id, attendance_code, subject_name, time_slot):
         session_id = uuid.uuid4().int % 1000000
         attendance_code = str(uuid.uuid4().int)[:5]
 
