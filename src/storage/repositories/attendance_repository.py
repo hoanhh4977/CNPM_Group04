@@ -32,3 +32,4 @@ class AttendanceRepository:
         return self.table.select("*").eq("session_id", session_id).execute().data
     def update_status(self, attendance_id, new_status):
         return self.table.update({"status": new_status}).eq("attendance_id", attendance_id).execute().data
+
