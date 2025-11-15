@@ -1,13 +1,27 @@
+import uuid
+from datetime import date
 from src.repository.session_repository import SessionRepository
 
 class SessionService:
     def __init__(self):
         self.session_repo = SessionRepository()
 
-    def get_sessions_by_lecturer(self, lecturer_id: str):
-        data = self.session_repo.table.select("*").eq("lecturer_id", lecturer_id).execute().data
-        return data if data else []
+    def get_session_info(self, session_id):
+        return self.session_repo.get_by_id(session_id)
 
-    def get_session_by_id(self, session_id: str):
-        data = self.session_repo.table.select("*").eq("session_id", session_id).execute().data
-        return data[0] if data else None
+    def get_sessions_for_lecturer(self, lecturer_id):
+        return self.session_repo.get_by_lecturer(lecturer_id)
+    def create_session(self, lecturer_id, subject_name, time_slot):
+        session_id = uuid.uuid4().int % 1000000
+        attendance_code = str(uuid.uuid4().int)[:5]
+
+        session_data = {
+            "session_id": session_id,
+            "lecturer_id": lecturer_id,
+            "session_date": date.today().isoformat(),
+            "time_slot": time_slot,
+            "subject_name": subject_name,
+            "attendance_code": attendance_code
+        }
+
+        return self.session_repo.create(session_data)
