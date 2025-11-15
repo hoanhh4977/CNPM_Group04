@@ -9,7 +9,7 @@ class StudentRepository:
         return self.table.insert(data).execute().data
 
     # Lấy tất cả sinh viên
-    def get_all_students(self):
+    def get_all(self):
         data = self.table.select("*").execute().data
         return data if data else []
 
