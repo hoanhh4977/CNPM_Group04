@@ -4,14 +4,6 @@ class LecturerRepository:
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
-    
-    def insert_default_lecturer(self):
-        existing = self.table.select("*").eq("lecturer_id", "L001").execute().data
-        if not existing:
-            self.table.insert({
-                "lecturer_id": "L001",
-                "user_id": "U001"
-            }).execute()
 
     # Lấy tất cả giảng viên
     def get_all_lecturers(self):
@@ -24,9 +16,8 @@ class LecturerRepository:
         return data[0] if data else None
 
     # Lấy giảng viên theo user_id
-    def get_by_user_id(self, user_id: str):
-        data = self.table.select("*").eq("user_id", user_id).execute().data
-        return data[0] if data else None
+    def get_by_user_id(self, user_id):
+        return self.table.select("*").eq("user_id", user_id).execute().data or []
 
     # Tạo mới giảng viên
     def create(self, lecturer_data: dict):
