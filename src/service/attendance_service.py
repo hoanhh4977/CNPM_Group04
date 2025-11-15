@@ -1,6 +1,6 @@
 import uuid
 from datetime import date
-from src.storage.repositories.attendance_repository import AttendanceRepository
+from src.repository.attendance_repository import AttendanceRepository
 
 class AttendanceService:
     def __init__(self):
@@ -26,3 +26,4 @@ class AttendanceService:
 
     def delete_attendance(self, student_id, session_id):
         return self.attendance_repository.delete_attendance(student_id, session_id)
+    
