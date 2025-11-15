@@ -33,15 +33,11 @@ def run_tests():
 
     #  Xem danh sách điểm danh
     attendance_list = lecturer_service.view_attendance_by_session(session_id)
-    print(f"\n📋 Danh sách điểm danh:")
+    print(f"\n Danh sách điểm danh:")
     for record in attendance_list:
         print(record)
 
 if __name__ == "__main__":
-    print("1. Kiểm thử tự động")
-    print("2. Chạy thủ công")
-    mode = input(" Chọn chế độ: ")
-    if mode == "1":
-        run_tests()
-    else:
-        run_console()
+    print(" Đang chạy ở chế độ thủ công...")
+
+    run_console()
