@@ -76,7 +76,7 @@ def view_attendance():
     data = lecturer_service.view_attendance_by_session(session_id)
 
     if not data:
-        print("❌ Không có dữ liệu điểm danh.")
+        print(" Không có dữ liệu điểm danh.")
         return
 
     print("\n DANH SÁCH ĐIỂM DANH:")
