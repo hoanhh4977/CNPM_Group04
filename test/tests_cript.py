@@ -5,39 +5,46 @@ from src.service.session_service import SessionService
 from src.repository.lecturer_repository import LecturerRepository
 from src.repository.student_repository import StudentRepository
 
-from src.service.main_console import run_console
+from src.service.main_console import run_console  # Đảm bảo file này có hàm run_console()
 
 def run_tests():
     print("✅ Bắt đầu kiểm thử...")
 
-    # ✅ Tạo dữ liệu mặc định nếu chưa có
+    # Tạo dữ liệu mặc định
     LecturerRepository().insert_default_lecturer()
     StudentRepository().insert_default_student()
 
-    # ✅ Khởi tạo các service
     student_service = StudentService()
     lecturer_service = LecturerService()
     session_service = SessionService()
 
-    # ✅ Dùng ID mặc định
     lecturer_id = "U001"
     student_id = "U002"
 
-    # 1. Tạo buổi học
-    session = session_service.create_session(lecturer_id, "Toán", "Sáng")
-    session_id = session[0]["session_id"]
-    attendance_code = session[0]["attendance_code"]
+    # ✅ Tạo buổi học với đầy đủ tham số
+    session_id = "1"
+    attendance_code = "ABC123"
+    subject_name = "Toán"
+    time_slot = "Sáng"
+
+    session = session_service.create_session(
+        session_id,
+        lecturer_id,
+        attendance_code,
+        subject_name,
+        time_slot
+    )
     print(f"✅ Buổi học: {session_id} | Mã điểm danh: {attendance_code}")
 
-    # 2. Sinh viên điểm danh
+    # ✅ Sinh viên điểm danh
     result = student_service.mark_attendance(student_id, session_id, attendance_code)
     print(f"✅ Điểm danh: {result}")
 
-    # 3. Giảng viên xem điểm danh
+    # ✅ Giảng viên xem điểm danh
     data = lecturer_service.view_attendance_by_session(session_id)
     print(f"✅ Dữ liệu điểm danh: {data}")
 
-    # 4. Giảng viên sửa trạng thái nếu có dữ liệu
+    # ✅ Giảng viên sửa trạng thái
     if data and len(data) > 0:
         attendance_id = data[0]["attendance_id"]
         result = lecturer_service.update_attendance_status(attendance_id, "Late")
@@ -47,7 +54,6 @@ def run_tests():
 
     print("✅ Kiểm thử hoàn tất.")
 
-# ✅ Menu chọn chế độ
 if __name__ == "__main__":
     print("🎓 === CHỌN CHẾ ĐỘ KIỂM THỬ ===")
     print("1. Kiểm thử tự động")
