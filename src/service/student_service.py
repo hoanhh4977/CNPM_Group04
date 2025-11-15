@@ -1,7 +1,8 @@
+import uuid
+from datetime import date
 from src.repository.student_repository import StudentRepository
 from src.repository.attendance_repository import AttendanceRepository
 from src.repository.session_repository import SessionRepository
-from datetime import datetime
 
 class StudentService:
     def __init__(self):
@@ -9,30 +10,48 @@ class StudentService:
         self.attendance_repo = AttendanceRepository()
         self.session_repo = SessionRepository()
 
-    def view_upcoming_sessions(self):
-        today = datetime.today().date().isoformat()
-        sessions = self.session_repo.table.select("*").gte("session_date", today).execute().data
-        return sessions if sessions else []
+    def get_student_info(self, student_id):
+        return self.student_repo.get_by_id(student_id)
 
-    def mark_attendance(self, student_id: str, session_id: str, code_input: str):
-        session = self.session_repo.table.select("*")\
-            .eq("session_id", session_id)\
-            .eq("attendance_code", code_input)\
-            .execute().data
+    def view_attendance(self, student_id):
+        return self.attendance_repo.get_by_student(student_id)
 
-        if session:
-            attendance_id = str(int(datetime.now().timestamp()))
-            self.attendance_repo.table.insert({
-                "attendance_id": attendance_id,
-                "student_id": student_id,
-                "session_id": session_id,
-                "check_in_time": datetime.now().isoformat(),
-                "status": "Present"
-            }).execute()
-            return "✅ Điểm danh thành công!"
-        else:
+    def register_student(self, student_data):
+        return self.student_repo.create(student_data)
+
+    def update_student(self, student_id, update_data):
+        return self.student_repo.update(student_id, update_data)
+
+    def delete_student(self, student_id):
+        return self.student_repo.delete(student_id)
+
+    def create_student(self, user_id, class_name):
+        student_id = uuid.uuid4().int % 1000000
+        data = {
+            "student_id": student_id,
+            "user_id": user_id,
+            "class_name": class_name
+        }
+        return self.student_repo.create(data)
+
+    def mark_attendance(self, student_id, session_id, attendance_code):
+        session_list = self.session_repo.get_by_id(session_id)
+
+        if not isinstance(session_list, list) or len(session_list) == 0:
+            return "❌ Không tìm thấy buổi học!"
+
+        session = session_list[0]
+
+        if session.get("attendance_code") != attendance_code:
             return "❌ Mã điểm danh không hợp lệ."
 
-    def view_attendance_results(self, student_id: str):
-        results = self.attendance_repo.table.select("*").eq("student_id", student_id).execute().data
-        return results if results else []
+        attendance_id = uuid.uuid4().int % 1000000
+        attendance_data = {
+            "attendance_id": attendance_id,
+            "student_id": student_id,
+            "session_id": session_id,
+            "status": "Present"
+        }
+
+        self.attendance_repo.create_attendance(attendance_data)
+        return "✅ Điểm danh thành công!"
