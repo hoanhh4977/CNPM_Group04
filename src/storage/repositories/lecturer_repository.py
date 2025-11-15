@@ -6,11 +6,12 @@ class LecturerRepository:
         self.table = self.db.table("lecturer")
     
     def insert_default_lecturer(self):
-        self.table.insert({
-            "lecturer_id": "U001",
-            "user_id": "U001",
-        }).execute()
-
+        existing = self.table.select("*").eq("lecturer_id", "L001").execute().data
+        if not existing:
+            self.table.insert({
+                "lecturer_id": "L001",
+                "user_id": "U001"
+            }).execute()
 
     # Lấy tất cả giảng viên
     def get_all_lecturers(self):
