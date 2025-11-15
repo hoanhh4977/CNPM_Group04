@@ -4,6 +4,13 @@ class LecturerRepository:
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
+    
+    def insert_default_lecturer(self):
+        self.table.insert({
+            "lecturer_id": "U001",
+            "user_id": "U001",
+        }).execute()
+
 
     # Lấy tất cả giảng viên
     def get_all_lecturers(self):
@@ -40,4 +47,3 @@ class LecturerRepository:
     def delete(self, lecturer_id: str):
         result = self.table.delete().eq("lecturer_id", lecturer_id).execute()
         return result.data
-    
