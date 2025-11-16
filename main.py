@@ -1,69 +1,79 @@
-from src.service.student_service import StudentService
-from src.service.lecturer_service import LecturerService
-from src.service.session_service import SessionService
-from src.service.attendance_service import AttendanceService
+"""
+HỆ THỐNG QUẢN LÝ ĐIỂM DANH SINH VIÊN
+Student Attendance Management System
+
+Entry point chính của ứng dụng
+"""
+
+from src.ui.main_menu import MainMenu
+from src.ui.student_menu import StudentMenu
+from src.ui.lecturer_menu import LecturerMenu
+from src.ui.admin_menu import AdminMenu
+from src.utils.formatters import print_header, print_error
+
 
 def main():
-    student_service = StudentService()
-    lecturer_service = LecturerService()
-    session_service = SessionService()
-    attendance_service = AttendanceService()
+    """
+    Hàm chính của chương trình
 
-    print("🎓 Hệ thống điểm danh")
-    print("1. Tạo giảng viên")
-    print("2. Tạo sinh viên")
-    print("3. Tạo buổi học")
-    print("4. Sinh viên điểm danh")
-    print("5. Xem điểm danh theo buổi")
-    print("6. Sửa trạng thái điểm danh")
-    print("7. Thoát")
+    Luồng hoạt động:
+    1. Hiển thị màn hình đăng nhập/đăng ký
+    2. Sau khi đăng nhập thành công, chuyển đến menu tương ứng:
+       - student -> StudentMenu
+       - lecturer -> LecturerMenu
+       - admin -> AdminMenu
+    3. Khi đăng xuất, quay lại bước 1
+    """
+    print_header("CHÀO MỪNG ĐẾN VỚI HỆ THỐNG QUẢN LÝ ĐIỂM DANH")
+    print("  🎓 Dành cho Sinh viên, Giảng viên và Quản trị viên")
+    print("\n  Nhấn Enter để bắt đầu...")
+    input()
 
     while True:
-        choice = input("👉 Chọn chức năng: ")
-        if choice == "1":
-            uid = input("Nhập user_id giảng viên: ")
-            result = lecturer_service.create_lecturer(uid)
-            print(f"✅ Tạo giảng viên: {result}")
+        # Bước 1: Đăng nhập / Đăng ký
+        main_menu = MainMenu()
+        user_data = main_menu.run()
 
-        elif choice == "2":
-            uid = input("Nhập user_id sinh viên: ")
-            class_name = input("Nhập lớp: ")
-            result = student_service.create_student(uid, class_name)
-            print(f"✅ Tạo sinh viên: {result}")
-
-        elif choice == "3":
-            lid = input("Nhập lecturer_id: ")
-            subject = input("Tên môn học: ")
-            slot = input("Ca học (Sáng/Chiều): ")
-            result = session_service.create_session(lid, subject, slot)
-            print(f"✅ Tạo buổi học: {result}")
-
-        elif choice == "4":
-            sid = input("Nhập student_id: ")
-            sess = input("Nhập session_id: ")
-            code = input("Nhập mã điểm danh: ")
-            result = student_service.mark_attendance(sid, sess, code)
-            print(result)
-
-        elif choice == "5":
-            sess = input("Nhập session_id: ")
-            data = lecturer_service.view_attendance_by_session(sess)
-            for d in data:
-                print(d)
-
-        elif choice == "6":
-            aid = input("Nhập attendance_id: ")
-            status = input("Trạng thái mới: ")
-            result = lecturer_service.update_attendance_status(aid, status)
-            print(result)
-
-        elif choice == "7":
-            print("👋 Tạm biệt!")
+        # Nếu người dùng chọn thoát (user_data = None)
+        if not user_data:
             break
 
-        else:
-            print("❌ Lựa chọn không hợp lệ.")
+        # Bước 2: Chuyển đến menu tương ứng dựa trên account_type
+        account_type = user_data.get("account_type")
+
+        try:
+            if account_type == "student":
+                menu = StudentMenu(user_data)
+                menu.run()
+
+            elif account_type == "lecturer":
+                menu = LecturerMenu(user_data)
+                menu.run()
+
+            elif account_type == "admin":
+                menu = AdminMenu(user_data)
+                menu.run()
+
+            else:
+                print_error(f"Loại tài khoản không hợp lệ: {account_type}")
+                break
+
+        except KeyboardInterrupt:
+            print("\n\n  ⚠️  Phát hiện Ctrl+C - Đăng xuất...")
+            continue
+
+        except Exception as e:
+            print_error(f"Lỗi không mong đợi: {str(e)}")
+            print("  Vui lòng thử lại hoặc liên hệ quản trị viên.")
+            input("\n  Nhấn Enter để tiếp tục...")
+            continue
+
 
 if __name__ == "__main__":
-    main()
-    
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n  👋 Tạm biệt! Hẹn gặp lại.")
+    except Exception as e:
+        print_error(f"Lỗi nghiêm trọng: {str(e)}")
+        print("  Chương trình sẽ đóng. Vui lòng báo cáo lỗi này cho quản trị viên.")

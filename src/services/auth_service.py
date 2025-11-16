@@ -44,17 +44,23 @@ class AuthService:
 
         if role == "student":
             student = self.student_repo.get_by_user_id(user["user_id"])
+            if not student:
+                return {"success": False, "error": "Không tìm thấy thông tin sinh viên trong hệ thống"}
             extra_data = {
                 "student_id": student["student_id"],
                 "class_name": student["class_name"]
             }
         if role == "lecturer":
             lecturer = self.lecturer_repo.get_by_user_id(user["user_id"])
+            if not lecturer:
+                return {"success": False, "error": "Không tìm thấy thông tin giảng viên trong hệ thống"}
             extra_data = {
                 "lecturer_id": lecturer["lecturer_id"]
             }
         if role == "admin":
             admin = self.admin_repo.get_by_user_id(user["user_id"])
+            if not admin:
+                return {"success": False, "error": "Không tìm thấy thông tin quản trị viên trong hệ thống"}
             extra_data = {
                 "admin_id": admin["admin_id"],
                 "admin_level": admin["admin_level"]
@@ -72,7 +78,7 @@ class AuthService:
             }
         }
 
-    def register(self, user_data: Dict):
+    def register(self, user_data: Dict = None, **kwargs):
         """
         user_data = {
             "username": "",
@@ -83,7 +89,13 @@ class AuthService:
             "account_type": "student"|"lecturer"|"admin",
             "extra": { ... }  # role-specific fields
         }
+        Can also be called with keyword arguments:
+        register(username=..., password=..., full_name=..., etc.)
         """
+        # Support both dict and kwargs
+        if user_data is None:
+            user_data = kwargs
+
         # Check if user already exists
         existing = self.user_repo.get_user_by_username(user_data["username"])
         if existing:

@@ -5,60 +5,50 @@ class LecturerRepository:
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
 
-    def create(self, data):
-        return self.table.insert(data).execute().data
-        
-    # Lấy tất cả giảng viên
-    def get_all(self):
-        return self.table.select("*").execute().data or []
-    # Lấy giảng viên theo ID
-    def get_by_id(self, lecturer_id):
-        data = self.table.select("*").eq("lecturer_id", lecturer_id).execute().data
-        return data[0] if data else None
-    
-    # Lấy giảng viên theo user_id
-    def get_by_user_id(self, user_id):
-        return self.table.select("*").eq("user_id", user_id).execute().data or []
-
-    # Tạo mới giảng viên
     def create(self, lecturer_data: dict):
         """
+        Tạo giảng viên mới
         lecturer_data = {
             "lecturer_id": "L001",
             "user_id": "U001"
         }
         """
-        result = self.table.insert(lecturer_data).execute()
-        return result.data
-
-    # Cập nhật giảng viên
-    def update(self, lecturer_id: str, update_data: dict):
-        result = self.table.update(update_data).eq("lecturer_id", lecturer_id).execute()
-        return result.data
-
-    # Xóa giảng viên
-    def delete(self, lecturer_id: str):
-        result = self.table.delete().eq("lecturer_id", lecturer_id).execute()
-        return result.data
-<<<<<<< HEAD
-    def __init__(self):
-        self.db = get_supabase()
-        self.table = self.db.table("lecturer")
-
-    def create(self, data: dict):
         try:
-            result = self.table.insert(data).execute()
+            result = self.table.insert(lecturer_data).execute()
             return result.data
         except Exception as e:
             print(f"Lỗi Supabase khi tạo lecturer: {e}")
             return None
-            
+
+    def get_all(self):
+        """Lấy tất cả giảng viên"""
+        return self.table.select("*").execute().data or []
+
+    def get_by_id(self, lecturer_id):
+        """Lấy giảng viên theo ID"""
+        data = self.table.select("*").eq("lecturer_id", lecturer_id).execute().data
+        return data[0] if data else None
+
+    def get_by_user_id(self, user_id):
+        """Lấy giảng viên theo user_id"""
+        data = self.table.select("*").eq("user_id", user_id).execute().data
+        return data[0] if data else None
+
+    def update(self, lecturer_id: str, update_data: dict):
+        """Cập nhật giảng viên"""
+        result = self.table.update(update_data).eq("lecturer_id", lecturer_id).execute()
+        return result.data
+
+    def delete(self, lecturer_id: str):
+        """Xóa giảng viên"""
+        result = self.table.delete().eq("lecturer_id", lecturer_id).execute()
+        return result.data
+
     def delete_by_user_id(self, user_id: str):
+        """Xóa giảng viên theo user_id"""
         try:
             result = self.table.delete().eq("user_id", user_id).execute()
             return result.data
         except Exception as e:
             print(f"Lỗi Supabase khi xóa lecturer: {e}")
             return None
-=======
->>>>>>> 0015678bc892863b15e8434d9f3b97cd7324b7dd

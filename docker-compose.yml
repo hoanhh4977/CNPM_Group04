@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    container_name: attendance_system
+    stdin_open: true  # Enable interactive input (-i flag)
+    tty: true         # Allocate pseudo-TTY for console display (-t flag)
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1  # See Python output in real-time
+      - LANG=C.UTF-8        # UTF-8 encoding for Vietnamese characters
+      - LC_ALL=C.UTF-8      # Locale setting for proper text display
+    restart: unless-stopped
+    command: python main.py
+
+  test:
+    build: .
+    container_name: attendance_test
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+    profiles:
+      - test
