@@ -138,6 +138,7 @@ class AuthService:
             "password": password
         })
 
+        user = None
         if result["success"]:
             print("\n🎉 Đăng nhập thành công!")
             user = result["data"]
@@ -147,6 +148,8 @@ class AuthService:
 
         print("="*40 + "\n")
 
+        return user
+
     def console_register(self):
         print("\n" + "="*40)
         print("✨ ĐĂNG KÝ TÀI KHOẢN ✨")
@@ -154,8 +157,13 @@ class AuthService:
 
         username = input("Tên đăng nhập: ")
         full_name = input("Họ và tên: ")
-        password = getpass.getpass("Mật khẩu: ")
-        phone_number = input("Số điện thoại: ")
+        password = input("Mật khẩu: ")
+        # ensure phone_number contain only 10 digits
+        while True:
+            phone_number = input("Số điện thoại: ")
+            if phone_number.isdigit() and len(phone_number) == 10:
+                break
+            print("❗ Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 chữ số.")
         address = input("Địa chỉ: ")
 
         print("\nChọn loại tài khoản:")
@@ -214,3 +222,14 @@ class AuthService:
             print("\n❌ Lỗi đăng ký:", result["error"])
 
         print("="*40 + "\n")
+
+        user = None
+        if result["success"]:
+            login_result = self.login({
+                "username": username,
+                "password": password
+            })
+            if login_result["success"]:
+                user = login_result["data"]
+        
+        return user
