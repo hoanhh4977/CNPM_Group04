@@ -40,4 +40,22 @@ class LecturerRepository:
     def delete(self, lecturer_id: str):
         result = self.table.delete().eq("lecturer_id", lecturer_id).execute()
         return result.data
-    
+    def __init__(self):
+        self.db = get_supabase()
+        self.table = self.db.table("lecturer")
+
+    def create(self, data: dict):
+        try:
+            result = self.table.insert(data).execute()
+            return result.data
+        except Exception as e:
+            print(f"Lỗi Supabase khi tạo lecturer: {e}")
+            return None
+            
+    def delete_by_user_id(self, user_id: str):
+        try:
+            result = self.table.delete().eq("user_id", user_id).execute()
+            return result.data
+        except Exception as e:
+            print(f"Lỗi Supabase khi xóa lecturer: {e}")
+            return None

@@ -41,3 +41,4 @@ class AdminRepository:
     def delete(self, admin_id: str):
         result = self.table.delete().eq("admin_id", admin_id).execute()
         return result.data
+

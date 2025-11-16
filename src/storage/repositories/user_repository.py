@@ -6,7 +6,7 @@ class UserRepository:
         self.table = self.db.table("User")
 
     # Lấy tất cả người dùng
-    def get_all_user(self):
+    def get_all_users(self):
         data = self.table.select("*").execute().data    
         return data if data else []
 
