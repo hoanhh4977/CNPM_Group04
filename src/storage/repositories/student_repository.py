@@ -4,9 +4,12 @@ class StudentRepository:
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("student")
+    
+    def create(self, data):
+        return self.table.insert(data).execute().data
 
     # Lấy tất cả sinh viên
-    def get_all_students(self):
+    def get_all(self):
         data = self.table.select("*").execute().data
         return data if data else []
 

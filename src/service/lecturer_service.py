@@ -1,35 +1,75 @@
+import uuid
+import random
+import string
+from datetime import date
 from src.repository.lecturer_repository import LecturerRepository
 from src.repository.session_repository import SessionRepository
 from src.repository.attendance_repository import AttendanceRepository
-from utils import generate_attendance_code
-from datetime import date
+from src.storage.client import get_supabase
 
 class LecturerService:
     def __init__(self):
         self.lecturer_repo = LecturerRepository()
         self.session_repo = SessionRepository()
         self.attendance_repo = AttendanceRepository()
+        self.attendance_table = get_supabase().table("attendance")
+        self.session_table = get_supabase().table("session")
 
-    def create_session(self, lecturer_id: str, subject_name: str, time_slot: str):
-        session_id = str(hash(subject_name + time_slot + lecturer_id) % 100000)
-        attendance_code = generate_attendance_code()
+    #  Tạo buổi học mới
+    def create_session(self, subject_name=None, time_slot=None):
+        lecturer_id = self.generate_lecturer_id()
+        self.ensure_lecturer_exists(lecturer_id)
 
-        self.session_repo.table.insert({
+        session_id = self.generate_session_id()
+        attendance_code = self.generate_attendance_code()
+
+        session_data = {
             "session_id": session_id,
             "lecturer_id": lecturer_id,
             "session_date": date.today().isoformat(),
             "time_slot": time_slot,
             "subject_name": subject_name,
             "attendance_code": attendance_code
-        }).execute()
+        }
 
-        return session_id, attendance_code
+        self.session_repo.create(session_data)
+        return session_data
 
-    def view_class_attendance(self, session_id: str):
-        results = self.attendance_repo.table.select("*").eq("session_id", session_id).execute().data
-        return results if results else []
+    #  Xem điểm danh theo buổi học
+    def view_attendance_by_session(self, session_id):
+        return self.attendance_table \
+            .select("student_id, status") \
+            .eq("session_id", session_id) \
+            .execute().data or []
 
-    def edit_attendance(self, attendance_id: str, new_status: str):
-        self.attendance_repo.table.update({"status": new_status})\
-            .eq("attendance_id", attendance_id).execute()
-        return "✅ Đã cập nhật trạng thái điểm danh."
+    #  Cập nhật trạng thái điểm danh
+    def update_attendance_status_by_student(self, student_id, session_id, new_status):
+        result = self.attendance_table \
+            .update({"status": new_status}) \
+            .eq("student_id", student_id) \
+            .eq("session_id", session_id) \
+            .execute().data
+
+        if result:
+            return " Cập nhật trạng thái thành công!"
+        else:
+            return " Không tìm thấy bản ghi điểm danh để cập nhật."
+
+    #  Sinh mã giảng viên
+    def generate_lecturer_id(self):
+        return "L" + str(uuid.uuid4().int % 10000).zfill(4)
+
+    #  Sinh mã buổi học
+    def generate_session_id(self):
+        return str(uuid.uuid4().int % 100000).zfill(5)
+
+    #  Sinh mã điểm danh
+    def generate_attendance_code(self):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+
+    #  Đảm bảo giảng viên tồn tại
+    def ensure_lecturer_exists(self, lecturer_id):
+        if not self.lecturer_repo.get_by_id(lecturer_id):
+            self.lecturer_repo.create({
+                "lecturer_id": lecturer_id
+            })

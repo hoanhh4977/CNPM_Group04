@@ -5,20 +5,20 @@ class LecturerRepository:
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
 
+    def create(self, data):
+        return self.table.insert(data).execute().data
+        
     # Lấy tất cả giảng viên
-    def get_all_lecturers(self):
-        data = self.table.select("*").execute().data
-        return data if data else []
-
+    def get_all(self):
+        return self.table.select("*").execute().data or []
     # Lấy giảng viên theo ID
-    def get_by_id(self, lecturer_id: str):
+    def get_by_id(self, lecturer_id):
         data = self.table.select("*").eq("lecturer_id", lecturer_id).execute().data
         return data[0] if data else None
-
+    
     # Lấy giảng viên theo user_id
-    def get_by_user_id(self, user_id: str):
-        data = self.table.select("*").eq("user_id", user_id).execute().data
-        return data[0] if data else None
+    def get_by_user_id(self, user_id):
+        return self.table.select("*").eq("user_id", user_id).execute().data or []
 
     # Tạo mới giảng viên
     def create(self, lecturer_data: dict):
@@ -40,6 +40,7 @@ class LecturerRepository:
     def delete(self, lecturer_id: str):
         result = self.table.delete().eq("lecturer_id", lecturer_id).execute()
         return result.data
+<<<<<<< HEAD
     def __init__(self):
         self.db = get_supabase()
         self.table = self.db.table("lecturer")
@@ -59,3 +60,5 @@ class LecturerRepository:
         except Exception as e:
             print(f"Lỗi Supabase khi xóa lecturer: {e}")
             return None
+=======
+>>>>>>> 0015678bc892863b15e8434d9f3b97cd7324b7dd
