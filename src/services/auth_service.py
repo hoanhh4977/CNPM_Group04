@@ -35,8 +35,11 @@ class AuthService:
             user = user_by_phone
 
         # Verify password
-        if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user["password_hash"].encode('utf-8')):
-            return {"success": False, "error": "Mật khẩu không đúng"}
+        try:
+            if not bcrypt.checkpw(credentials["password"].encode('utf-8'), user["password_hash"].encode('utf-8')):
+                return {"success": False, "error": "Mật khẩu không đúng"}
+        except ValueError as e:
+            return {"success": False, "error": f"Mật khẩu trong hệ thống không hợp lệ. Vui lòng liên hệ quản trị viên để đặt lại mật khẩu. Chi tiết: {str(e)}"}
 
         # Determine role and attach role-specific info
         role = user["account_type"]
